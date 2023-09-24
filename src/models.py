@@ -32,7 +32,7 @@ class User(db.Model):
 
 class People(db.Model):
     __tablename__ = 'people'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(250), unique=True, nullable=False)
     gender = db.Column(db.String(250), nullable=True)
     hair_color = db.Column(db.String(250), nullable=False)
@@ -53,7 +53,7 @@ class People(db.Model):
 
 class Planets(db.Model):
     __tablename__ = 'planets'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
     population = db.Column(db.Integer, nullable=False)
     terrain = db.Column(db.Integer, nullable=False)
@@ -72,7 +72,7 @@ class Planets(db.Model):
 
 class Vehicles(db.Model):
     __tablename__ = 'vehicles'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(250), unique=True, nullable=False)
     capacity = db.Column(db.Integer, nullable=False)
 

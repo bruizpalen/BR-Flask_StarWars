@@ -130,23 +130,22 @@ def create_people():
     gender = request_data.get("gender", "n/a")
     hair_color = request_data.get("hair_color", "n/a")
     eye_color = request_data.get("eye_color", "n/a")
+
+    # Check if a person with the same name already exists
+    existing_person = People.query.filter_by(name=name).first()
+    if existing_person:
+        return jsonify({"message": "Person with this name already exists"}), 400
+
     new_people = People(name=name, gender=gender,
                         hair_color=hair_color, eye_color=eye_color)
 
     try:
         db.session.add(new_people)
         db.session.commit()
-        return jsonify({"message": "User registered successfully"}), 201
+        return jsonify({"message": "Person registered successfully"}), 201
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": f"Error: {str(e)}"}), 500
-
-
-@app.route('/planets', methods=['GET'])
-def get_all_planets():
-    planets = Planets.query.all()
-    planets_serialized = [planet.serialize() for planet in planets]
-    return jsonify({"msg": "Planets succesfully accessed", "planets": planets_serialized}), 200
 
 
 @app.route('/planets/<int:planet_id>', methods=['GET'])
@@ -163,11 +162,17 @@ def get_planet_by_id(planet_id):
 def create_planet():
     request_data = request.get_json(force=True)
 
-    name = request_data.get("name", "n/a")
+    name = request_data.get("name")
     population = request_data.get("population", "n/a")
     terrain = request_data.get("terrain", "n/a")
-    new_planet = Planets(name=name, population=population,
-                         terrain=terrain)
+
+    # Check if a planet with the same name already exists
+    existing_planet = Planets.query.filter_by(name=name).first()
+    if existing_planet:
+        return jsonify({"message": "Planet with this name already exists"}), 400
+
+    new_planet = Planets(name=name, population=population, terrain=terrain)
+
     try:
         db.session.add(new_planet)
         db.session.commit()
