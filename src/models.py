@@ -9,9 +9,9 @@ class User(db.Model):
     password = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
 
-    # people = db.relationship('People', secondary='favorite_people',
+    # fav_people = db.relationship('People', secondary='favorite_people',
     #                          lazy='subquery', backref='user_id')
-    # planets = db.relationship('Planets', secondary='favorite_planets',
+    # fav_planets = db.relationship('Planets', secondary='favorite_planets',
     #                           lazy='subquery', backref='user_id')
     # vehicles = db.relationship('Vehicles', secondary='favorite_vehicles',
     #                            lazy='subquery', backref='user_id')
@@ -23,7 +23,7 @@ class User(db.Model):
         return {
             "id": self.id,
             "email": self.email,
-            "fav_people": [person.serialize() for person in self.fav_people],
+            "fav_people": [person.id for person in self.fav_people],
             "fav_planets": [planet.serialize() for planet in self.fav_planets],
             # "vehicles": [vehicle.serialize() for vehicle in self.vehicles],
             # Do not serialize the password; it's a security breach
@@ -31,15 +31,17 @@ class User(db.Model):
 
 
 class People(db.Model):
-    __tablename__ = 'people'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(250), unique=True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(250), nullable=False)
     gender = db.Column(db.String(250), nullable=True)
     hair_color = db.Column(db.String(250), nullable=False)
     eye_color = db.Column(db.String(250), nullable=False)
 
-    user_fav = db.relationship('User', secondary='favorite_people',
-                           lazy='subquery', backref='fav_people')
+    users = db.relationship('User', secondary='favorite_people',
+                            lazy='subquery', backref='fav_people')
+
+    def __repr__(self):
+        return '<People %r>' % self.name
 
     def serialize(self):
         return {
@@ -52,14 +54,13 @@ class People(db.Model):
 
 
 class Planets(db.Model):
-    __tablename__ = 'planets'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
     population = db.Column(db.Integer, nullable=False)
     terrain = db.Column(db.Integer, nullable=False)
 
     user_fav = db.relationship('User', secondary='favorite_planets',
-                           lazy='subquery', backref='fav_planets')
+                               lazy='subquery', backref='fav_planets')
 
     def serialize(self):
         return {
@@ -71,13 +72,12 @@ class Planets(db.Model):
 
 
 class Vehicles(db.Model):
-    __tablename__ = 'vehicles'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(250), unique=True, nullable=False)
     capacity = db.Column(db.Integer, nullable=False)
 
     user_fav = db.relationship('User', secondary='favorite_vehicles',
-                           lazy='subquery', backref='fav_vehicles')
+                               lazy='subquery', backref='fav_vehicles')
 
     def serialize(self):
         return {
